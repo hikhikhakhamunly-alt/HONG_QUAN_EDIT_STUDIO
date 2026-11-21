@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HONG QUAN EDIT STUDIO</title>
+<style>
+:root{
+  --bg:#050908;--panel:#0b1511;--panel2:#101e17;
+  --green:#39ff88;--green2:#00d978;--text:#eafff1;
+  --muted:#82998c;--border:#193b29;--red:#ff536b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+header{
+  height:70px;padding:0 25px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);
+  background:#07100b;position:sticky;top:0;z-index:5;
+}
+.logo{font-size:19px;font-weight:900;letter-spacing:1px}
+.logo span{color:var(--green);text-shadow:0 0 15px #39ff8880}
+.header-right{display:flex;align-items:center;gap:12px}
+.pill{border:1px solid var(--border);padding:8px 12px;border-radius:30px;color:var(--green);font-size:12px}
+.btn{
+  border:1px solid var(--border);background:var(--panel2);color:var(--text);
+  padding:10px 15px;border-radius:9px;transition:.2s;
+}
+.btn:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 14px #39ff8820}
+.btn.primary{background:var(--green);color:#031008;border:0;font-weight:800}
+.btn.primary:hover{background:#7dffad;box-shadow:0 0 22px #39ff8860}
+.btn.danger{color:#ff7385;border-color:#632330}
+main{max-width:1500px;margin:auto;padding:25px}
+.hidden{display:none!important}
+.auth-wrap{min-height:calc(100vh - 70px);display:grid;place-items:center;padding:20px}
+.auth{
+  width:min(420px,100%);padding:30px;background:var(--panel);
+  border:1px solid var(--border);border-radius:18px;
+  box-shadow:0 0 50px #00ff6610;
+}
+.auth h1{margin:0 0 8px;font-size:27px}
+.auth h1 span{color:var(--green)}
+.sub{color:var(--muted);font-size:13px;margin-bottom:25px}
+.field{margin:15px 0}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
+.field input,.field select{
+  width:100%;padding:13px;background:#06100a;color:white;
+  border:1px solid var(--border);border-radius:9px;outline:none;
+}
+.field input:focus,.field select:focus{border-color:var(--green);box-shadow:0 0 10px #39ff8820}
+.auth .btn{width:100%;margin-top:10px}
+.switch{text-align:center;color:var(--muted);font-size:13px;margin-top:18px}
+.switch a{color:var(--green);cursor:pointer}
+.dashboard{display:grid;grid-template-columns:220px 1fr;gap:20px}
+.sidebar,.panel{
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;
+}
+.sidebar{padding:15px;height:max-content}
+.side-title{color:var(--muted);font-size:10px;letter-spacing:2px;padding:10px}
+.nav{
+  padding:12px;border-radius:8px;color:#b8cabe;cursor:pointer;
+  margin:4px 0;font-size:14px;
+}
+.nav:hover,.nav.active{background:#10291b;color:var(--green)}
+.content{min-width:0}
+.welcome{margin-bottom:20px}
+.welcome h2{margin:0 0 6px;font-size:25px}
+.welcome p{margin:0;color:var(--muted);font-size:13px}
+.editor{
+  display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:15px;
+}
+.stage{
+  min-height:490px;background:#080d0a;border:1px solid var(--border);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  padding:20px;overflow:hidden;position:relative;
+}
+#canvas{max-width:100%;max-height:650px;object-fit:contain}
+.empty{text-align:center;color:var(--muted)}
+.empty .big{font-size:55px;color:var(--green)}
+.tools{padding:16px}
+.tools h3{font-size:14px;margin:0 0 15px;color:var(--green)}
+.tool-group{padding-bottom:15px;margin-bottom:15px;border-bottom:1px solid var(--border)}
+.tool-group:last-child{border:0}
+.tool-group label{display:flex;justify-content:space-between;font-size:12px;color:#b9cabe;margin-bottom:9px}
+input[type=range]{width:100%;accent-color:var(--green)}
+.tool-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tool-buttons .btn{font-size:12px;padding:9px 5px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .btn{font-size:12px}
+.upload{position:relative;overflow:hidden}
+.upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.section-title{font-size:17px;margin:0 0 15px}
+.panel{padding:20px;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--border)}
+th{color:var(--green);font-size:11px}
+td{color:#c7d9cd}
+.status{color:var(--green)}
+.admin-form{display:grid;grid-template-columns:1fr 1fr 130px auto;gap:9px}
+.admin-form input,.admin-form select{
+  min-width:0;background:#06100a;border:1px solid var(--border);
+  color:white;border-radius:8px;padding:11px;
+}
+.notice{font-size:12px;color:var(--muted);margin-top:12px}
+#toast{
+  position:fixed;bottom:20px;right:20px;background:#10291b;
+  border:1px solid var(--green);color:var(--green);
+  padding:13px 18px;border-radius:10px;display:none;z-index:20;
+}
+@media(max-width:850px){
+  main{padding:13px}
+  .dashboard{grid-template-columns:1fr}
+  .sidebar{display:flex;overflow:auto;gap:5px;padding:8px}
+  .side-title{display:none}
+  .nav{white-space:nowrap;margin:0}
+  .editor{grid-template-columns:1fr}
+  .stage{min-height:300px}
+  .admin-form{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  header{padding:0 12px;height:60px}
+  .logo{font-size:14px}
+  .header-right .pill{display:none}
+  .welcome h2{font-size:21px}
+  .stage{min-height:240px;padding:10px}
+  .admin-form{grid-template-columns:1fr}
+  table{font-size:11px}
+  th,td{padding:9px 5px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">HONG QUAN <span>EDIT STUDIO</span></div>
+  <div class="header-right">
+    <span class="pill" id="roleBadge">GUEST</span>
+    <button class="btn hidden" id="logoutBtn" onclick="logout()">Đăng xuất</button>
+  </div>
+</header>
+
+<section id="authScreen" class="auth-wrap">
+  <div class="auth">
+    <h1>WELCOME <span>BACK.</span></h1>
+    <div class="sub">Không gian chỉnh sửa ảnh sáng tạo của bạn.</div>
+    <div id="loginForm">
+      <div class="field"><label>TÊN ĐĂNG NHẬP</label><input id="loginUser" placeholder="Nhập tài khoản"></div>
+      <div class="field"><label>MẬT KHẨU</label><input id="loginPass" type="password" placeholder="Nhập mật khẩu"></div>
+      <button class="btn primary" onclick="login()">ĐĂNG NHẬP</button>
+      <div class="switch">Chưa có tài khoản? <a onclick="showRegister()">Đăng ký</a></div>
+    </div>
+    <div id="registerForm" class="hidden">
+      <div class="field"><label>TÊN ĐĂNG NHẬP</label><input id="regUser" placeholder="Tạo tài khoản"></div>
+      <div class="field"><label>MẬT KHẨU</label><input id="regPass" type="password" placeholder="Tạo mật khẩu"></div>
+      <button class="btn primary" onclick="register()">TẠO TÀI KHOẢN</button>
+      <div class="switch">Đã có tài khoản? <a onclick="showLogin()">Đăng nhập</a></div>
+    </div>
+  </div>
+</section>
+
+<main id="appScreen" class="hidden">
+<div class="dashboard">
+  <aside class="sidebar">
+    <div class="side-title">WORKSPACE</div>
+    <div class="nav active" onclick="showPage('editorPage',this)">✦ Trình chỉnh sửa</div>
+    <div class="nav" onclick="showPage('adminPage',this)" id="adminNav">⚙ Quản trị</div>
+  </aside>
+
+  <div class="content">
+    <section id="editorPage">
+      <div class="welcome">
+        <h2>Studio Workspace <span style="color:var(--green)">✦</span></h2>
+        <p>Chỉnh sửa hình ảnh theo phong cách của riêng bạn.</p>
+      </div>
+      <div class="toolbar">
+        <label class="btn primary upload">＋ Tải ảnh lên<input type="file" accept="image/*" onchange="loadImage(event)"></label>
+        <button class="btn" onclick="undo()">↶ Hoàn tác</button>
+        <button class="btn" onclick="redo()">↷ Làm lại</button>
+        <button class="btn" onclick="rotate(-90)">↶ Xoay trái</button>
+        <button class="btn" onclick="rotate(90)">↷ Xoay phải</button>
+        <button class="btn" onclick="flip()">⇋ Lật ảnh</button>
+        <button class="btn primary" onclick="exportImage()">↓ Xuất PNG</button>
+      </div>
+
+      <div class="editor">
+        <div class="stage" id="stage">
+          <div class="empty" id="empty">
+            <div class="big">＋</div>
+            <h3>THẢ ẢNH VÀO ĐÂY</h3>
+            <p>Hoặc nhấn nút Tải ảnh lên để bắt đầu</p>
+          </div>
+          <canvas id="canvas" class="hidden"></canvas>
+        </div>
+        <div class="panel tools">
+          <h3>✦ IMAGE CONTROLS</h3>
+          <div class="tool-group">
+            <label>Độ sáng <span id="brightVal">100%</span></label>
+            <input id="bright" type="range" min="0" max="200" value="100" oninput="changeFilter()">
+          </div>
+          <div class="tool-group">
+            <label>Tương phản <span id="contrastVal">100%</span></label>
+            <input id="contrast" type="range" min="0" max="200" value="100" oninput="changeFilter()">
+          </div>
+          <div class="tool-group">
+            <label>Bão hòa <span id="satVal">100%</span></label>
+            <input id="sat" type="range" min="0" max="200" value="100" oninput="changeFilter()">
+          </div>
+          <div class="tool-group">
+            <label>Làm mờ <span id="blurVal">0px</span></label>
+            <input id="blur" type="range" min="0" max="15" value="0" oninput="changeFilter()">
+          </div>
+          <div class="tool-group">
+            <label>BỘ LỌC</label>
+            <div class="tool-buttons">
+              <button class="btn" onclick="preset('none')">Gốc</button>
+              <button class="btn" onclick="preset('grayscale')">Đen trắng</button>
+              <button class="btn" onclick="preset('sepia')">Vintage</button>
+              <button class="btn" onclick="preset('warm')">Warm</button>
+              <button class="btn" onclick="preset('cool')">Cool</button>
+              <button class="btn" onclick="preset('vivid')">Vivid</button>
+            </div>
+          </div>
+          <div class="tool-group">
+            <label>THÊM CHỮ</label>
+            <input id="textInput" placeholder="Nhập nội dung..." style="width:100%;padding:10px;background:#06100a;border:1px solid var(--border);color:white;border-radius:8px">
+            <button class="btn" style="width:100%;margin-top:8px" onclick="addText()">＋ Thêm chữ vào ảnh</button>
+          </div>
+          <button class="btn" style="width:100%" onclick="resetEditor()">Đặt lại chỉnh sửa</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="adminPage" class="hidden">
+      <div class="welcome">
+        <h2>Admin <span style="color:var(--green)">Control Center</span></h2>
+        <p>Quản lý tài khoản và quyền truy cập.</p>
+      </div>
+      <div class="panel">
+        <h3 class="section-title">＋ Tạo tài khoản</h3>
+        <div class="admin-form">
+          <input id="newUser" placeholder="Tên tài khoản">
+          <input id="newPass" type="password" placeholder="Mật khẩu">
+          <select id="newRole"><option value="pro">Pro</option><option value="user">User</option></select>
+          <button class="btn primary" onclick="createAccount()">Tạo</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="section-title">Danh sách người dùng</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>TÀI KHOẢN</th><th>QUYỀN</th><th>TRẠNG THÁI</th><th>THAO TÁC</th></tr></thead>
+            <tbody id="userTable"><tr><td colspan="4">Đang tải...</td></tr></tbody>
+          </table>
+        </div>
+        <p class="notice">Các thao tác quản trị được xác thực bởi máy chủ Apps Script.</p>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+</div>
+<div id="toast"></div>
+
+<script>
+/* Ứng dụng chạy bên trong Apps Script HTML Service.
+   Backend được gọi trực tiếp bằng google.script.run. */
+
+let currentUser=null, sessionToken=null;
+let originalImage=null, imageRotation=0, imageFlip=false;
+let history=[], historyIndex=-1, filterPreset='none';
+
+const $=id=>document.getElementById(id);
+const canvas=$('canvas');
+const ctx=canvas.getContext('2d');
+
+function toast(message){
+  const el=$('toast');el.textContent=message;el.style.display='block';
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>el.style.display='none',2800);
+}
+function server(method,...args){
+  return new Promise((resolve,reject)=>{
+    if(!window.google || !google.script || !google.script.run){
+      reject(new Error('Trang chưa chạy bên trong Apps Script HTML Service.'));
+      return;
+    }
+    const runner=google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(err=>reject(new Error(err.message||String(err))));
+    runner[method](...args);
+  });
+}
+function showLogin(){
+  $('loginForm').classList.remove('hidden');
+  $('registerForm').classList.add('hidden');
+}
+function showRegister(){
+  $('loginForm').classList.add('hidden');
+  $('registerForm').classList.remove('hidden');
+}
+function setLoggedIn(user,token){
+  currentUser=user;sessionToken=token;
+  $('authScreen').classList.add('hidden');
+  $('appScreen').classList.remove('hidden');
+  $('logoutBtn').classList.remove('hidden');
+  $('roleBadge').textContent=(user.role||'USER').toUpperCase();
+  $('adminNav').classList.toggle('hidden',user.role!=='admin');
+}
+async function login(){
+  const username=$('loginUser').value.trim();
+  const password=$('loginPass').value;
+  if(!username||!password)return toast('Nhập đầy đủ tài khoản và mật khẩu.');
+  try{
+    const result=await server('login',username,password);
+    if(!result||!result.success)throw new Error(result?.message||'Đăng nhập thất bại.');
+    const user=result.user||result.data?.user;
+    const token=result.token||result.data?.token;
+    if(!user)throw new Error('Máy chủ không trả về thông tin tài khoản.');
+    setLoggedIn(user,token);
+    toast('Đăng nhập thành công!');
+  }catch(e){toast(e.message)}
+}
+async function register(){
+  const username=$('regUser').value.trim();
+  const password=$('regPass').value;
+  if(username.length<3||password.length<6)return toast('Tên tài khoản tối thiểu 3 ký tự, mật khẩu 6 ký tự.');
+  try{
+    const result=await server('register',username,password);
+    if(!result||!result.success)throw new Error(result?.message||'Đăng ký thất bại.');
+    toast('Đăng ký thành công. Hãy đăng nhập.');
+    showLogin();
+  }catch(e){toast(e.message)}
+}
+async function logout(){
+  try{if(sessionToken)await server('logout',sessionToken)}catch(e){}
+  currentUser=null;sessionToken=null;
+  $('appScreen').classList.add('hidden');
+  $('authScreen').classList.remove('hidden');
+  $('logoutBtn').classList.add('hidden');
+  $('roleBadge').textContent='GUEST';
+  showLogin();
+  toast('Đã đăng xuất.');
+}
+function showPage(id,nav){
+  document.querySelectorAll('#editorPage,#adminPage').forEach(x=>x.classList.add('hidden'));
+  $(id).classList.remove('hidden');
+  document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));
+  nav.classList.add('active');
+  if(id==='adminPage')loadUsers();
+}
+async function createAccount(){
+  const username=$('newUser').value.trim();
+  const password=$('newPass').value;
+  const role=$('newRole').value;
+  if(!username||!password)return toast('Nhập tài khoản và mật khẩu.');
+  try{
+    const r=await server('adminCreateUser',sessionToken,username,password,role);
+    if(!r?.success)throw new Error(r?.message||'Không tạo được tài khoản.');
+    toast('Đã tạo tài khoản.');$('newUser').value='';$('newPass').value='';
+    loadUsers();
+  }catch(e){toast(e.message)}
+}
+async function loadUsers(){
+  try{
+    const r=await server('adminListUsers',sessionToken);
+    if(!r?.success)throw new Error(r?.message||'Không tải được danh sách.');
+    const users=r.users||r.data||[];
+    $('userTable').innerHTML=users.map(u=>{
+      const name=u.username||u.user;
+      const role=u.role||'user';
+      const status=u.status||'active';
+      return `<tr>
+        <td>${escapeHTML(name)}</td>
+        <td>${escapeHTML(role)}</td>
+        <td class="status">${escapeHTML(status)}</td>
+        <td>
+          <button class="btn" onclick="changeRole('${escapeJS(name)}','${role==='pro'?'user':'pro'}')">${role==='pro'?'Hạ User':'Lên Pro'}</button>
+          <button class="btn danger" onclick="changeStatus('${escapeJS(name)}','${status==='active'?'locked':'active'}')">${status==='active'?'Khóa':'Mở'}</button>
+        </td></tr>`;
+    }).join('')||'<tr><td colspan="4">Chưa có người dùng.</td></tr>';
+  }catch(e){$('userTable').innerHTML='<tr><td colspan="4">'+escapeHTML(e.message)+'</td></tr>'}
+}
+async function changeRole(name,role){
+  try{
+    const r=await server('adminChangeRole',sessionToken,name,role);
+    if(!r?.success)throw new Error(r?.message||'Không đổi được quyền.');
+    toast('Đã cập nhật quyền.');loadUsers();
+  }catch(e){toast(e.message)}
+}
+async function changeStatus(name,status){
+  try{
+    const r=await server('adminSetStatus',sessionToken,name,status);
+    if(!r?.success)throw new Error(r?.message||'Không cập nhật được trạng thái.');
+    toast('Đã cập nhật trạng thái.');loadUsers();
+  }catch(e){toast(e.message)}
+}
+function escapeHTML(s){
+  return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeJS(s){return String(s??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+function loadImage(event){
+  const file=event.target.files[0];if(!file)return;
+  if(!file.type.startsWith('image/'))return toast('Vui lòng chọn file ảnh.');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      originalImage=img;imageRotation=0;imageFlip=false;
+      canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+      $('empty').classList.add('hidden');canvas.classList.remove('hidden');
+      resetSliders();drawImage();saveHistory();toast('Đã tải ảnh lên.');
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function resetSliders(){
+  $('bright').value=100;$('contrast').value=100;
+  $('sat').value=100;$('blur').value=0;filterPreset='none';
+  updateLabels();
+}
+function updateLabels(){
+  $('brightVal').textContent=$('bright').value+'%';
+  $('contrastVal').textContent=$('contrast').value+'%';
+  $('satVal').textContent=$('sat').value+'%';
+  $('blurVal').textContent=$('blur').value+'px';
+}
+function changeFilter(){updateLabels();drawImage()}
+function preset(name){
+  if(!originalImage)return toast('Hãy tải ảnh trước.');
+  filterPreset=name;
+  const values={
+    none:[100,100,100,0],grayscale:[100,100,0,0],
+    sepia:[100,100,85,0],warm:[108,105,125,0],
+    cool:[105,108,115,0],vivid:[105,125,155,0]
+  }[name];
+  [$('bright').value,$('contrast').value,$('sat').value,$('blur').value]=values;
+  updateLabels();drawImage();saveHistory();
+}
+function drawImage(){
+  if(!originalImage)return;
+  const w=originalImage.naturalWidth,h=originalImage.naturalHeight;
+  const rotated=Math.abs(imageRotation)%180===90;
+  canvas.width=rotated?h:w;canvas.height=rotated?w:h;
+  ctx.save();
+  ctx.translate(canvas.width/2,canvas.height/2);
+  ctx.rotate(imageRotation*Math.PI/180);
+  ctx.scale(imageFlip?-1:1,1);
+  const brightness=$('bright').value;
+  const contrast=$('contrast').value;
+  const sat=$('sat').value;
+  const blur=$('blur').value;
+  ctx.filter=`brightness(${brightness}%) contrast(${contrast}%) saturate(${sat}%) blur(${blur}px)`;
+  if(filterPreset==='grayscale')ctx.filter+=' grayscale(1)';
+  if(filterPreset==='sepia')ctx.filter+=' sepia(.8)';
+  if(filterPreset==='warm')ctx.filter+=' sepia(.25)';
+  if(filterPreset==='cool')ctx.filter+=' hue-rotate(12deg)';
+  ctx.drawImage(originalImage,-w/2,-h/2,w,h);
+  ctx.restore();
+}
+function rotate(deg){
+  if(!originalImage)return toast('Hãy tải ảnh trước.');
+  imageRotation=(imageRotation+deg+360)%360;drawImage();saveHistory();
+}
+function flip(){
+  if(!originalImage)return toast('Hãy tải ảnh trước.');
+  imageFlip=!imageFlip;drawImage();saveHistory();
+}
+function addText(){
+  if(!originalImage)return toast('Hãy tải ảnh trước.');
+  const value=$('textInput').value.trim();
+  if(!value)return toast('Nhập nội dung chữ trước.');
+  drawImage();
+  ctx.save();
+  ctx.filter='none';ctx.font=`bold ${Math.max(24,canvas.width*.045)}px Arial`;
+  ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#001b0b';
+  ctx.fillStyle='#39ff88';
+  ctx.strokeText(value,canvas.width/2,canvas.height/2);
+  ctx.fillText(value,canvas.width/2,canvas.height/2);
+  ctx.restore();
+  commitCanvas();$('textInput').value='';
+}
+function commitCanvas(){
+  const img=new Image();
+  img.onload=()=>{originalImage=img;imageRotation=0;imageFlip=false;resetSliders();saveHistory()};
+  img.src=canvas.toDataURL('image/png');
+}
+function saveHistory(){
+  if(!originalImage)return;
+  const snap=canvas.toDataURL('image/png');
+  history=history.slice(0,historyIndex+1);
+  history.push(snap);historyIndex=history.length-1;
+  if(history.length>20){history.shift();historyIndex--}
+}
+function restoreSnapshot(index){
+  if(index<0||index>=history.length)return;
+  historyIndex=index;
+  const img=new Image();
+  img.onload=()=>{
+    originalImage=img;imageRotation=0;imageFlip=false;
+    canvas.width=img.width;canvas.height=img.height;
+    ctx.filter='none';ctx.drawImage(img,0,0);
+    resetSliders();
+  };
+  img.src=history[index];
+}
+function undo(){if(historyIndex>0)restoreSnapshot(historyIndex-1);else toast('Không còn bước để hoàn tác.')}
+function redo(){if(historyIndex<history.length-1)restoreSnapshot(historyIndex+1);else toast('Không còn bước để làm lại.')}
+function resetEditor(){
+  if(!originalImage)return;
+  imageRotation=0;imageFlip=false;resetSliders();
+  drawImage();saveHistory();
+}
+function exportImage(){
+  if(!originalImage)return toast('Chưa có ảnh để xuất.');
+  const a=document.createElement('a');
+  a.download='hong-quan-edit.png';a.href=canvas.toDataURL('image/png');a.click();
+  toast('Đã xuất ảnh PNG.');
+}
+</script>
+</body>
+</html>
